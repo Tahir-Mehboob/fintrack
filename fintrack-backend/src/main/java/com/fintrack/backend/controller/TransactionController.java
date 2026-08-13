@@ -25,18 +25,22 @@ public class TransactionController {
             @Valid @RequestBody TransactionRequestDTO dto,
             Authentication authentication) {
         String userEmail = authentication.getName(); // comes from JWT once Security is wired up
+        //  String userEmail = "tahir@test.com"; // TEMPORARY - replace with authentication.getName() later
+
         TransactionResponseDTO created = transactionService.create(dto, userEmail);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<TransactionResponseDTO>> getAll(Authentication authentication) {
+        //String userEmail = "tahir@test.com"; // TEMPORARY
         String userEmail = authentication.getName();
         return ResponseEntity.ok(transactionService.getByUser(userEmail));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+       // String userEmail = "tahir@test.com"; // TEMPORARY
         String userEmail = authentication.getName();
         transactionService.delete(id, userEmail);
         return ResponseEntity.noContent().build();

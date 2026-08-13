@@ -25,6 +25,7 @@ public class BudgetController {
             @Valid @RequestBody BudgetRequestDTO dto,
             Authentication authentication) {
         String userEmail = authentication.getName();
+        //String userEmail = "tahir@test.com"; // TEMPORARY - replace with authentication.getName() later
         BudgetResponseDTO created = budgetService.create(dto, userEmail);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
@@ -35,6 +36,7 @@ public class BudgetController {
             @RequestParam Integer year,
             Authentication authentication) {
         String userEmail = authentication.getName();
+        //String userEmail = "tahir@test.com"; // TEMPORARY - replace with authentication.getName() later
         return ResponseEntity.ok(budgetService.getByUserAndMonth(userEmail, month, year));
     }
 }

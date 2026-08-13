@@ -6,6 +6,8 @@ import com.fintrack.backend.exception.ResourceNotFoundException;
 import com.fintrack.backend.mapper.UserMapper;
 import com.fintrack.backend.model.User;
 import com.fintrack.backend.repository.UserRepository;
+import com.fintrack.backend.security.JwtUtil;
+import com.fintrack.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Override
     public void register(RegisterRequest request) {
@@ -37,7 +40,6 @@ public class AuthServiceImpl implements AuthService {
             throw new ResourceNotFoundException("Invalid email or password");
         }
 
-        // Placeholder token — replaced with real JWT once we build JwtUtil
-        return "temporary-token-for-" + user.getEmail();
+        return jwtUtil.generateToken(user.getEmail());
     }
 }
