@@ -1,0 +1,38 @@
+<div class="auth-container">
+  <h2>Login to FinTrack</h2>
+
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <div class="form-field">
+      <label for="email">Email</label>
+      <kendo-textbox
+        id="email"
+        name="email"
+        [(ngModel)]="formData.email"
+        required
+        placeholder="Enter your email">
+      </kendo-textbox>
+    </div>
+
+    <div class="form-field">
+      <label for="password">Password</label>
+      <kendo-textbox
+        id="password"
+        name="password"
+        type="password"
+        [(ngModel)]="formData.password"
+        required
+        placeholder="Enter your password">
+      </kendo-textbox>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-message">{{ errorMessage }}</div>
+    }
+
+    <button kendoButton themeColor="primary" [disabled]="!loginForm.valid || loading">
+      {{ loading ? 'Logging in...' : 'Login' }}
+    </button>
+  </form>
+
+  <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+</div>
