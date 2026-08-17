@@ -1,1 +1,22 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="header">
+    <h1>FinTrack Dashboard</h1>
+    <button kendoButton (click)="logout()">Logout</button>
+  </div>
+
+  <app-transaction-form (transactionCreated)="onTransactionCreated()"></app-transaction-form>
+
+  <h2>Your Transactions</h2>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  } @else {
+    <kendo-grid [data]="transactions()" [pageable]="true" [sortable]="true" [pageSize]="10">
+      <kendo-grid-column field="transactionDate" title="Date" [width]="120"></kendo-grid-column>
+      <kendo-grid-column field="categoryName" title="Category" [width]="150"></kendo-grid-column>
+      <kendo-grid-column field="description" title="Description"></kendo-grid-column>
+      <kendo-grid-column field="type" title="Type" [width]="100"></kendo-grid-column>
+      <kendo-grid-column field="amount" title="Amount" [width]="120" format="{0:c}"></kendo-grid-column>
+    </kendo-grid>
+  }
+</div>

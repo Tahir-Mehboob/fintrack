@@ -1,0 +1,64 @@
+<div class="transaction-form-container">
+  <h3>Add Transaction</h3>
+
+  <form (ngSubmit)="onSubmit()" #txnForm="ngForm">
+    <div class="form-field">
+      <label>Category</label>
+      <kendo-dropdownlist
+        [data]="categories()"
+        textField="name"
+        valueField="id"
+        [(ngModel)]="selectedCategory"
+        name="category"
+        [defaultItem]="{ id: null, name: 'Select category', type: 'EXPENSE' }"
+        required>
+      </kendo-dropdownlist>
+    </div>
+
+    <div class="form-field">
+      <label>Type</label>
+      <kendo-dropdownlist
+        [data]="typeOptions"
+        [(ngModel)]="type"
+        name="type">
+      </kendo-dropdownlist>
+    </div>
+
+    <div class="form-field">
+      <label>Amount</label>
+      <kendo-numerictextbox
+        [(ngModel)]="amount"
+        name="amount"
+        [min]="0.01"
+        format="c2"
+        required>
+      </kendo-numerictextbox>
+    </div>
+
+    <div class="form-field">
+      <label>Description</label>
+      <kendo-textbox
+        [(ngModel)]="description"
+        name="description"
+        placeholder="Optional description">
+      </kendo-textbox>
+    </div>
+
+    <div class="form-field">
+      <label>Date</label>
+      <kendo-datepicker
+        [(ngModel)]="transactionDate"
+        name="transactionDate"
+        required>
+      </kendo-datepicker>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-message">{{ errorMessage() }}</div>
+    }
+
+    <button kendoButton themeColor="primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Adding...' : 'Add Transaction' }}
+    </button>
+  </form>
+</div>
