@@ -1,0 +1,59 @@
+<div class="budget-form-container">
+  <h3>Set Monthly Budget</h3>
+
+  <form (ngSubmit)="onSubmit()" #budgetForm="ngForm">
+    <div class="form-field">
+      <label>Category</label>
+      <kendo-dropdownlist
+        [data]="categories()"
+        textField="name"
+        valueField="id"
+        [(ngModel)]="selectedCategory"
+        name="category"
+        [defaultItem]="{ id: null, name: 'Select category', type: 'EXPENSE' }"
+        required>
+      </kendo-dropdownlist>
+    </div>
+
+    <div class="form-field">
+      <label>Monthly Limit</label>
+      <kendo-numerictextbox
+        [(ngModel)]="monthlyLimit"
+        name="monthlyLimit"
+        [min]="1"
+        format="c2"
+        required>
+      </kendo-numerictextbox>
+    </div>
+
+    <div class="form-field">
+      <label>Month</label>
+      <kendo-dropdownlist
+        [data]="months"
+        textField="text"
+        valueField="value"
+        [(ngModel)]="selectedMonth"
+        name="month">
+      </kendo-dropdownlist>
+    </div>
+
+    <div class="form-field">
+      <label>Year</label>
+      <kendo-numerictextbox
+        [(ngModel)]="selectedYear"
+        name="year"
+        [min]="2020"
+        [max]="2100"
+        [format]="'#'">
+      </kendo-numerictextbox>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-message">{{ errorMessage() }}</div>
+    }
+
+    <button kendoButton themeColor="primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Saving...' : 'Set Budget' }}
+    </button>
+  </form>
+</div>

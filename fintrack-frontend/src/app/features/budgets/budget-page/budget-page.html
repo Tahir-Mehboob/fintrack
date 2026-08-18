@@ -1,0 +1,57 @@
+<div class="budget-page-container">
+  <h1>Budget Overview</h1>
+
+  <app-budget-form (budgetCreated)="loadBudgets()"></app-budget-form>
+
+  <div class="filter-row">
+    <div class="form-field">
+      <label>Month</label>
+      <kendo-dropdownlist
+        [data]="months"
+        textField="text"
+        valueField="value"
+        [(ngModel)]="selectedMonth"
+        (valueChange)="onFilterChange()">
+      </kendo-dropdownlist>
+    </div>
+    <div class="form-field">
+      <label>Year</label>
+      <kendo-numerictextbox
+        [(ngModel)]="selectedYear"
+        [format]="'#'"
+        (valueChange)="onFilterChange()">
+      </kendo-numerictextbox>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  } @else if (budgets().length === 0) {
+    <p>No budgets set for this month. Create one above.</p>
+  } @else {
+    <kendo-chart>
+      <kendo-chart-title text="Budget vs Actual Spending"></kendo-chart-title>
+      <kendo-chart-legend position="bottom"></kendo-chart-legend>
+      <kendo-chart-category-axis>
+        <kendo-chart-category-axis-item [categories]="categoryLabels"></kendo-chart-category-axis-item>
+      </kendo-chart-category-axis>
+      <kendo-chart-series>
+        <kendo-chart-series-item type="column" name="Budget Limit" [data]="limitData" color="#4CAF50"></kendo-chart-series-item>
+        <kendo-chart-series-item type="column" name="Spent So Far" [data]="spentData" color="#F44336"></kendo-chart-series-item>
+      </kendo-chart-series>
+    </kendo-chart>
+
+    <div class="budget-cards">
+      @for (budget of budgets(); track budget.id) {
+        <div class="budget-card" [class.over-budget]="isOverBudget(budget)">
+          <h4>{{ budget.categoryName }}</h4>
+          <p>Limit: {{ budget.monthlyLimit | currency }}</p>
+          <p>Spent: {{ budget.spentSoFar | currency }}</p>
+          @if (isOverBudget(budget)) {
+            <p class="warning">⚠️ Over budget!</p>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

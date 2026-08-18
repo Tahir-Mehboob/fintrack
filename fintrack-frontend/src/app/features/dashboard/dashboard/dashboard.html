@@ -1,7 +1,12 @@
 <div class="dashboard-container">
   <div class="header">
     <h1>FinTrack Dashboard</h1>
-    <button kendoButton (click)="logout()">Logout</button>
+    </div>
+    <div>
+       <a routerLink="/categories" style="margin-right: 16px;">Categories</a>
+        <a routerLink="/budgets" style="margin-right: 16px;">View Budgets</a>
+
+      <button kendoButton (click)="logout()">Logout</button>
   </div>
 
   <app-transaction-form (transactionCreated)="onTransactionCreated()"></app-transaction-form>

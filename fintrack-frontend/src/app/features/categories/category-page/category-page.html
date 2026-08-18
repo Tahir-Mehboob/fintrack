@@ -1,0 +1,25 @@
+<div class="category-page-container">
+  <h1>Manage Categories</h1>
+
+  <app-category-form (categoryCreated)="loadCategories()"></app-category-form>
+
+  <h2>All Categories</h2>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  } @else if (categories().length === 0) {
+    <p>No categories yet. Add one above.</p>
+  } @else {
+    <kendo-grid [data]="categories()" [pageable]="true" [pageSize]="10">
+      <kendo-grid-column field="name" title="Name"></kendo-grid-column>
+      <kendo-grid-column field="type" title="Type" [width]="120"></kendo-grid-column>
+      <kendo-grid-column title="Actions" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton size="small" themeColor="error" (click)="deleteCategory(dataItem.id)">
+            Delete
+          </button>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+  }
+</div>

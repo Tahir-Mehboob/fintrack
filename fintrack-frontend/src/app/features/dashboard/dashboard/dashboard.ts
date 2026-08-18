@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { ButtonModule } from '@progress/kendo-angular-buttons';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TransactionService } from '../../../core/services/transaction.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { TransactionResponse } from '../../../models/transaction.model';
@@ -12,7 +12,7 @@ import { TransactionForm } from '../../transactions/transaction-form/transaction
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, GridModule, ButtonModule,TransactionForm],
+  imports: [CommonModule, GridModule, ButtonModule,TransactionForm,RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
