@@ -1,10 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GridModule } from '@progress/kendo-angular-grid';
-import { ButtonModule } from '@progress/kendo-angular-buttons';
-import { Router, RouterLink } from '@angular/router';
 import { TransactionService } from '../../../core/services/transaction.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { TransactionResponse } from '../../../models/transaction.model';
 import { TransactionForm } from '../../transactions/transaction-form/transaction-form';
 
@@ -12,7 +9,7 @@ import { TransactionForm } from '../../transactions/transaction-form/transaction
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, GridModule, ButtonModule,TransactionForm,RouterLink],
+  imports: [CommonModule, GridModule,TransactionForm],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -22,8 +19,6 @@ export class Dashboard implements OnInit {
 
   constructor(
     private transactionService: TransactionService,
-    private authService: AuthService,
-    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -48,8 +43,4 @@ export class Dashboard implements OnInit {
       this.loadTransactions(); // refresh the grid
     }
 
-    logout(): void {
-      this.authService.logout();
-      this.router.navigate(['/login']);
-    }
 }

@@ -1,20 +1,16 @@
 import { Component, OnInit, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from '@progress/kendo-angular-buttons';
-import { InputsModule } from '@progress/kendo-angular-inputs';
-import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
-import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
-import { NotificationService } from '@progress/kendo-angular-notification';
+import { ButtonModule, FormModule } from '@coreui/angular';
 import { CategoryService } from '../../../core/services/category.service';
 import { TransactionService } from '../../../core/services/transaction.service';
-import { CategoryResponse } from '../../../models/category.model';
+import { CategoryResponse, TransactionType } from '../../../models/category.model';
 import { TransactionRequest } from '../../../models/transaction.model';
 
 @Component({
   selector: 'app-transaction-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputsModule, DropDownsModule, DateInputsModule],
+  imports: [CommonModule, FormsModule, ButtonModule, FormModule],
   templateUrl: './transaction-form.html',
   styleUrl: './transaction-form.css'
 })
@@ -25,18 +21,15 @@ export class TransactionForm implements OnInit {
   loading = signal(false);
   errorMessage = signal('');
 
-  selectedCategory: CategoryResponse | null = null;
+  selectedCategoryId: number | null = null;
   amount: number | null = null;
   description = '';
-  transactionDate: Date = new Date();
-  type: 'INCOME' | 'EXPENSE' = 'EXPENSE';
-
-  typeOptions = ['EXPENSE', 'INCOME'];
+  transactionDate: string = this.formatDate(new Date());
+  type: TransactionType = 'EXPENSE';
 
   constructor(
     private categoryService: CategoryService,
-    private transactionService: TransactionService,
-    private notificationService: NotificationService
+    private transactionService: TransactionService
   ) {}
 
   ngOnInit(): void {
@@ -51,7 +44,7 @@ export class TransactionForm implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.selectedCategory || !this.amount) {
+    if (!this.selectedCategoryId || !this.amount) {
       this.errorMessage.set('Please fill all required fields');
       return;
     }
@@ -60,21 +53,16 @@ export class TransactionForm implements OnInit {
     this.errorMessage.set('');
 
     const request: TransactionRequest = {
-      categoryId: this.selectedCategory.id,
+      categoryId: this.selectedCategoryId,
       amount: this.amount,
       description: this.description,
-      transactionDate: this.formatDate(this.transactionDate),
+      transactionDate: this.transactionDate,
       type: this.type
     };
 
     this.transactionService.create(request).subscribe({
       next: () => {
         this.loading.set(false);
-        this.notificationService.show({
-          content: 'Transaction added successfully!',
-          type: { style: 'success', icon: true },
-          position: { horizontal: 'center', vertical: 'top' }
-        });
         this.resetForm();
         this.transactionCreated.emit();
       },
@@ -93,10 +81,10 @@ export class TransactionForm implements OnInit {
   }
 
   private resetForm(): void {
-    this.selectedCategory = null;
+    this.selectedCategoryId = null;
     this.amount = null;
     this.description = '';
-    this.transactionDate = new Date();
+    this.transactionDate = this.formatDate(new Date());
     this.type = 'EXPENSE';
   }
 }

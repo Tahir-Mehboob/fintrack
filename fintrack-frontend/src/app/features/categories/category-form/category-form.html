@@ -2,30 +2,31 @@
   <h3>Add Category</h3>
 
   <form (ngSubmit)="onSubmit()" #categoryForm="ngForm">
-    <div class="form-field">
-      <label>Category Name</label>
-      <kendo-textbox
-        [(ngModel)]="name"
+    <div class="mb-3">
+      <label cLabel for="name">Category Name</label>
+      <input
+        cFormControl
+        type="text"
+        id="name"
         name="name"
+        [(ngModel)]="name"
         placeholder="e.g. Groceries, Rent, Salary"
         required>
-      </kendo-textbox>
     </div>
 
-    <div class="form-field">
-      <label>Type</label>
-      <kendo-dropdownlist
-        [data]="typeOptions"
-        [(ngModel)]="type"
-        name="type">
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="type">Type</label>
+      <select cSelect id="type" name="type" [(ngModel)]="type">
+        <option value="EXPENSE">EXPENSE</option>
+        <option value="INCOME">INCOME</option>
+      </select>
     </div>
 
     @if (errorMessage()) {
-      <div class="error-message">{{ errorMessage() }}</div>
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
     }
 
-    <button kendoButton themeColor="primary" type="submit" [disabled]="loading()">
+    <button cButton color="primary" type="submit" [disabled]="loading()">
       {{ loading() ? 'Adding...' : 'Add Category' }}
     </button>
   </form>

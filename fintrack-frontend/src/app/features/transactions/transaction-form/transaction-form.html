@@ -2,62 +2,64 @@
   <h3>Add Transaction</h3>
 
   <form (ngSubmit)="onSubmit()" #txnForm="ngForm">
-    <div class="form-field">
-      <label>Category</label>
-      <kendo-dropdownlist
-        [data]="categories()"
-        textField="name"
-        valueField="id"
-        [(ngModel)]="selectedCategory"
-        name="category"
-        [defaultItem]="{ id: null, name: 'Select category', type: 'EXPENSE' }"
-        required>
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="category">Category</label>
+      <select cSelect id="category" name="category" [(ngModel)]="selectedCategoryId" required>
+        <option [ngValue]="null">Select category</option>
+        @for (cat of categories(); track cat.id) {
+          <option [ngValue]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
     </div>
 
-    <div class="form-field">
-      <label>Type</label>
-      <kendo-dropdownlist
-        [data]="typeOptions"
-        [(ngModel)]="type"
-        name="type">
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="type">Type</label>
+      <select cSelect id="type" name="type" [(ngModel)]="type">
+        <option value="EXPENSE">EXPENSE</option>
+        <option value="INCOME">INCOME</option>
+      </select>
     </div>
 
-    <div class="form-field">
-      <label>Amount</label>
-      <kendo-numerictextbox
-        [(ngModel)]="amount"
+    <div class="mb-3">
+      <label cLabel for="amount">Amount</label>
+      <input
+        cFormControl
+        type="number"
+        id="amount"
         name="amount"
-        [min]="0.01"
-        format="c2"
+        [(ngModel)]="amount"
+        min="0.01"
+        step="0.01"
         required>
-      </kendo-numerictextbox>
     </div>
 
-    <div class="form-field">
-      <label>Description</label>
-      <kendo-textbox
-        [(ngModel)]="description"
+    <div class="mb-3">
+      <label cLabel for="description">Description</label>
+      <input
+        cFormControl
+        type="text"
+        id="description"
         name="description"
+        [(ngModel)]="description"
         placeholder="Optional description">
-      </kendo-textbox>
     </div>
 
-    <div class="form-field">
-      <label>Date</label>
-      <kendo-datepicker
-        [(ngModel)]="transactionDate"
+    <div class="mb-3">
+      <label cLabel for="transactionDate">Date</label>
+      <input
+        cFormControl
+        type="date"
+        id="transactionDate"
         name="transactionDate"
+        [(ngModel)]="transactionDate"
         required>
-      </kendo-datepicker>
     </div>
 
     @if (errorMessage()) {
-      <div class="error-message">{{ errorMessage() }}</div>
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
     }
 
-    <button kendoButton themeColor="primary" type="submit" [disabled]="loading()">
+    <button cButton color="primary" type="submit" [disabled]="loading()">
       {{ loading() ? 'Adding...' : 'Add Transaction' }}
     </button>
   </form>

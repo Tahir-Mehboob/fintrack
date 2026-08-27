@@ -2,57 +2,55 @@
   <h3>Set Monthly Budget</h3>
 
   <form (ngSubmit)="onSubmit()" #budgetForm="ngForm">
-    <div class="form-field">
-      <label>Category</label>
-      <kendo-dropdownlist
-        [data]="categories()"
-        textField="name"
-        valueField="id"
-        [(ngModel)]="selectedCategory"
-        name="category"
-        [defaultItem]="{ id: null, name: 'Select category', type: 'EXPENSE' }"
-        required>
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="category">Category</label>
+      <select cSelect id="category" name="category" [(ngModel)]="selectedCategoryId" required>
+        <option [ngValue]="null">Select category</option>
+        @for (cat of categories(); track cat.id) {
+          <option [ngValue]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
     </div>
 
-    <div class="form-field">
-      <label>Monthly Limit</label>
-      <kendo-numerictextbox
-        [(ngModel)]="monthlyLimit"
+    <div class="mb-3">
+      <label cLabel for="monthlyLimit">Monthly Limit</label>
+      <input
+        cFormControl
+        type="number"
+        id="monthlyLimit"
         name="monthlyLimit"
-        [min]="1"
-        format="c2"
+        [(ngModel)]="monthlyLimit"
+        min="1"
+        step="0.01"
         required>
-      </kendo-numerictextbox>
     </div>
 
-    <div class="form-field">
-      <label>Month</label>
-      <kendo-dropdownlist
-        [data]="months"
-        textField="text"
-        valueField="value"
-        [(ngModel)]="selectedMonth"
-        name="month">
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="month">Month</label>
+      <select cSelect id="month" name="month" [(ngModel)]="selectedMonth">
+        @for (m of months; track m.value) {
+          <option [ngValue]="m.value">{{ m.text }}</option>
+        }
+      </select>
     </div>
 
-    <div class="form-field">
-      <label>Year</label>
-      <kendo-numerictextbox
-        [(ngModel)]="selectedYear"
+    <div class="mb-3">
+      <label cLabel for="year">Year</label>
+      <input
+        cFormControl
+        type="number"
+        id="year"
         name="year"
-        [min]="2020"
-        [max]="2100"
-        [format]="'#'">
-      </kendo-numerictextbox>
+        [(ngModel)]="selectedYear"
+        min="2020"
+        max="2100">
     </div>
 
     @if (errorMessage()) {
-      <div class="error-message">{{ errorMessage() }}</div>
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
     }
 
-    <button kendoButton themeColor="primary" type="submit" [disabled]="loading()">
+    <button cButton color="primary" type="submit" [disabled]="loading()">
       {{ loading() ? 'Saving...' : 'Set Budget' }}
     </button>
   </form>
