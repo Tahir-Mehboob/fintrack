@@ -63,4 +63,26 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionRepository.deleteById(id);
     }
+
+    @Override
+    public TransactionResponseDTO update(Long id, TransactionRequestDTO dto, String userEmail) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+
+        if (!transaction.getUser().getEmail().equals(userEmail)) {
+            throw new SecurityException("Not authorized to update this transaction");
+        }
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        transaction.setCategory(category);
+        transaction.setAmount(dto.getAmount());
+        transaction.setDescription(dto.getDescription());
+        transaction.setTransactionDate(dto.getTransactionDate());
+        transaction.setType(dto.getType());
+
+        Transaction updated = transactionRepository.save(transaction);
+        return transactionMapper.toResponseDTO(updated);
+    }
 }

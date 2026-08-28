@@ -45,4 +45,13 @@ public class TransactionController {
         transactionService.delete(id, userEmail);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TransactionResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody TransactionRequestDTO dto,
+            Authentication authentication) {
+        String userEmail = authentication.getName();
+        return ResponseEntity.ok(transactionService.update(id, dto, userEmail));
+    }
 }

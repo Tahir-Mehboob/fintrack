@@ -10,4 +10,5 @@ public interface CategoryService {
     List<CategoryResponseDTO> getAll();
     CategoryResponseDTO getById(Long id);
     void delete(Long id);
+    CategoryResponseDTO update(Long id, CategoryRequestDTO dto);
 }

@@ -39,4 +39,18 @@ public class BudgetController {
         //String userEmail = "tahir@test.com"; // TEMPORARY - replace with authentication.getName() later
         return ResponseEntity.ok(budgetService.getByUserAndMonth(userEmail, month, year));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<BudgetResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody BudgetRequestDTO dto,
+            Authentication authentication) {
+        String userEmail = authentication.getName();
+        return ResponseEntity.ok(budgetService.update(id, dto, userEmail));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+        String userEmail = authentication.getName();
+        budgetService.delete(id, userEmail);
+        return ResponseEntity.noContent().build();
+    }
 }

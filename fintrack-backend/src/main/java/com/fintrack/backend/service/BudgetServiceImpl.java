@@ -65,4 +65,36 @@ public class BudgetServiceImpl implements BudgetService {
                 })
                 .collect(Collectors.toList());
     }
+    @Override
+    public BudgetResponseDTO update(Long id, BudgetRequestDTO dto, String userEmail) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+        if (!budget.getUser().getEmail().equals(userEmail)) {
+            throw new SecurityException("Not authorized to update this budget");
+        }
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        budget.setCategory(category);
+        budget.setMonthlyLimit(dto.getMonthlyLimit());
+        budget.setMonth(dto.getMonth());
+        budget.setYear(dto.getYear());
+
+        Budget updated = budgetRepository.save(budget);
+        return budgetMapper.toResponseDTO(updated, 0.0); // spentSoFar recalculated on next GET
+    }
+
+    @Override
+    public void delete(Long id, String userEmail) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Budget not found"));
+
+        if (!budget.getUser().getEmail().equals(userEmail)) {
+            throw new SecurityException("Not authorized to delete this budget");
+        }
+
+        budgetRepository.deleteById(id);
+    }
 }

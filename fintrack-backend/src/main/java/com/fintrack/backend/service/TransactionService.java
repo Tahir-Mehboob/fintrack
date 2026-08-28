@@ -9,4 +9,5 @@ public interface TransactionService {
     TransactionResponseDTO create(TransactionRequestDTO dto, String userEmail);
     List<TransactionResponseDTO> getByUser(String userEmail);
     void delete(Long id, String userEmail);
+    TransactionResponseDTO update(Long id, TransactionRequestDTO dto, String userEmail);
 }
