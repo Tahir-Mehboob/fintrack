@@ -1,9 +1,9 @@
-import { Component, signal, output } from '@angular/core';
+import { Component, signal, output, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule, FormModule } from '@coreui/angular';
 import { CategoryService } from '../../../core/services/category.service';
-import { CategoryRequest, TransactionType } from '../../../models/category.model';
+import { CategoryRequest, CategoryResponse, TransactionType } from '../../../models/category.model';
 
 @Component({
   selector: 'app-category-form',
@@ -13,7 +13,9 @@ import { CategoryRequest, TransactionType } from '../../../models/category.model
   styleUrl: './category-form.css'
 })
 export class CategoryForm {
+  editingCategory = input<CategoryResponse | null>(null);
   categoryCreated = output<void>();
+  cancelEdit = output<void>();
 
   loading = signal(false);
   errorMessage = signal('');
@@ -21,7 +23,18 @@ export class CategoryForm {
   name = '';
   type: TransactionType = 'EXPENSE';
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService) {
+    effect(() => {
+      const category = this.editingCategory();
+      if (category) {
+        this.name = category.name;
+        this.type = category.type;
+      } else {
+        this.name = '';
+        this.type = 'EXPENSE';
+      }
+    });
+  }
 
   onSubmit(): void {
     if (!this.name.trim()) {
@@ -37,7 +50,12 @@ export class CategoryForm {
       type: this.type
     };
 
-    this.categoryService.create(request).subscribe({
+    const editing = this.editingCategory();
+    const request$ = editing
+      ? this.categoryService.update(editing.id, request)
+      : this.categoryService.create(request);
+
+    request$.subscribe({
       next: () => {
         this.loading.set(false);
         this.name = '';
@@ -46,8 +64,12 @@ export class CategoryForm {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set(err.error?.error || 'Failed to create category');
+        this.errorMessage.set(err.error?.error || 'Failed to save category');
       }
     });
+  }
+
+  onCancel(): void {
+    this.cancelEdit.emit();
   }
 }

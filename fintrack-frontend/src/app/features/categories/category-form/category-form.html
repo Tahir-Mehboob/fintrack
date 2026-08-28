@@ -1,5 +1,5 @@
 <div class="category-form-container">
-  <h3>Add Category</h3>
+  <h3>{{ editingCategory() ? 'Edit Category' : 'Add Category' }}</h3>
 
   <form (ngSubmit)="onSubmit()" #categoryForm="ngForm">
     <div class="mb-3">
@@ -27,7 +27,13 @@
     }
 
     <button cButton color="primary" type="submit" [disabled]="loading()">
-      {{ loading() ? 'Adding...' : 'Add Category' }}
+      {{ loading() ? 'Saving...' : (editingCategory() ? 'Update Category' : 'Add Category') }}
     </button>
+
+    @if (editingCategory()) {
+      <button cButton color="secondary" variant="outline" type="button" (click)="onCancel()" style="margin-left: 8px;">
+        Cancel
+      </button>
+    }
   </form>
 </div>

@@ -1,0 +1,12 @@
+.profile-container {
+  padding: 32px;
+  max-width: 500px;
+}
+
+.profile-section {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  background: #fff;
+}

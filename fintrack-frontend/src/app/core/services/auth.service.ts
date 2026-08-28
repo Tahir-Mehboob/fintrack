@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { RegisterRequest, LoginRequest, AuthResponse } from '../../models/user.model';
+import { RegisterRequest, LoginRequest, AuthResponse, UserResponse } from '../../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'fintrack_token';
+
+  currentUser = signal<UserResponse | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -22,6 +24,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    this.currentUser.set(null);
   }
 
   getToken(): string | null {
@@ -30,6 +33,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  setCurrentUser(user: UserResponse): void {
+    this.currentUser.set(user);
   }
 
   private setToken(token: string): void {

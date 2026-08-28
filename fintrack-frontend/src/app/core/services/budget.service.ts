@@ -11,11 +11,18 @@ export class BudgetService {
 
   getByMonth(month: number, year: number): Observable<BudgetResponse[]> {
     return this.http.get<BudgetResponse[]>(this.apiUrl, {
-      params: { month: month.toString(), year: year.toString() }
+      params: { month: month.toString(), year: year.toString() },
     });
   }
 
   create(request: BudgetRequest): Observable<BudgetResponse> {
     return this.http.post<BudgetResponse>(this.apiUrl, request);
+  }
+  update(id: number, request: BudgetRequest): Observable<BudgetResponse> {
+    return this.http.put<BudgetResponse>(`${this.apiUrl}/${id}`, request);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

@@ -5,6 +5,7 @@ import { Dashboard } from './features/dashboard/dashboard/dashboard';
 import { BudgetPage } from './features/budgets/budget-page/budget-page';
 import { CategoryPage } from './features/categories/category-page/category-page';
 import { Shell } from './core/layout/shell/shell';
+import { Profile } from './features/profile/profile/profile';
 
 
 export const routes: Routes = [
@@ -23,6 +24,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'budgets', component: BudgetPage },
       { path: 'categories', component: CategoryPage },
+      { path: 'profile', component: Profile },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   }

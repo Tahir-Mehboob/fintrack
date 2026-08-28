@@ -1,20 +1,23 @@
+import { Component, OnInit, signal, output, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule, FormModule } from '@coreui/angular';
-import { BudgetService } from '../../../core/services/budget.service';
 import { CategoryService } from '../../../core/services/category.service';
-import { BudgetRequest } from '../../../models/budget.model';
+import { BudgetService } from '../../../core/services/budget.service';
 import { CategoryResponse } from '../../../models/category.model';
+import { BudgetRequest, BudgetResponse } from '../../../models/budget.model';
 
 @Component({
   selector: 'app-budget-form',
+  standalone: true,
   imports: [CommonModule, FormsModule, ButtonModule, FormModule],
   templateUrl: './budget-form.html',
   styleUrl: './budget-form.css',
 })
 export class BudgetForm implements OnInit {
+  editingBudget = input<BudgetResponse | null>(null);
   budgetCreated = output<void>();
+  cancelEdit = output<void>();
 
   categories = signal<CategoryResponse[]>([]);
   loading = signal(false);
@@ -22,6 +25,8 @@ export class BudgetForm implements OnInit {
 
   selectedCategoryId: number | null = null;
   monthlyLimit: number | null = null;
+  selectedMonth = new Date().getMonth() + 1;
+  selectedYear = new Date().getFullYear();
 
   months = [
     { text: 'January', value: 1 }, { text: 'February', value: 2 },
@@ -31,13 +36,25 @@ export class BudgetForm implements OnInit {
     { text: 'September', value: 9 }, { text: 'October', value: 10 },
     { text: 'November', value: 11 }, { text: 'December', value: 12 }
   ];
-  selectedMonth = new Date().getMonth() + 1;
-  selectedYear = new Date().getFullYear();
 
   constructor(
     private categoryService: CategoryService,
     private budgetService: BudgetService
-  ) {}
+  ) {
+    effect(() => {
+      const budget = this.editingBudget();
+      const cats = this.categories();
+      if (budget) {
+        const match = cats.find(c => c.name === budget.categoryName);
+        this.selectedCategoryId = match ? match.id : null;
+        this.monthlyLimit = budget.monthlyLimit;
+        this.selectedMonth = budget.month;
+        this.selectedYear = budget.year;
+      } else {
+        this.resetForm();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.categoryService.getAll().subscribe({
@@ -62,17 +79,32 @@ export class BudgetForm implements OnInit {
       year: this.selectedYear
     };
 
-    this.budgetService.create(request).subscribe({
+    const editing = this.editingBudget();
+    const request$ = editing
+      ? this.budgetService.update(editing.id, request)
+      : this.budgetService.create(request);
+
+    request$.subscribe({
       next: () => {
         this.loading.set(false);
-        this.selectedCategoryId = null;
-        this.monthlyLimit = null;
+        this.resetForm();
         this.budgetCreated.emit();
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set(err.error?.error || 'Failed to create budget');
+        this.errorMessage.set(err.error?.error || 'Failed to save budget');
       }
     });
+  }
+
+  onCancel(): void {
+    this.cancelEdit.emit();
+  }
+
+  private resetForm(): void {
+    this.selectedCategoryId = null;
+    this.monthlyLimit = null;
+    this.selectedMonth = new Date().getMonth() + 1;
+    this.selectedYear = new Date().getFullYear();
   }
 }

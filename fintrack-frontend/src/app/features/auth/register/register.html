@@ -2,48 +2,54 @@
   <h2>Create Account</h2>
 
   <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-    <div class="form-field">
-      <label for="fullName">Full Name</label>
-      <kendo-textbox
+    <div class="mb-3">
+      <label cLabel for="fullName">Full Name</label>
+      <input
+        cFormControl
+        type="text"
         id="fullName"
         name="fullName"
         [(ngModel)]="formData.fullName"
-        required
-        placeholder="Enter your full name">
-      </kendo-textbox>
+        placeholder="Enter your full name"
+        required>
     </div>
 
-    <div class="form-field">
-      <label for="email">Email</label>
-      <kendo-textbox
+    <div class="mb-3">
+      <label cLabel for="email">Email</label>
+      <input
+        cFormControl
+        type="email"
         id="email"
         name="email"
         [(ngModel)]="formData.email"
-        required
-        placeholder="Enter your email">
-      </kendo-textbox>
+        placeholder="Enter your email"
+        required>
     </div>
 
-    <div class="form-field">
-      <label for="password">Password</label>
-      <kendo-textbox
+    <div class="mb-3">
+      <label cLabel for="password">Password</label>
+      <input
+        cFormControl
+        type="password"
         id="password"
         name="password"
-        type="password"
         [(ngModel)]="formData.password"
-        required
-        placeholder="Enter your password">
-      </kendo-textbox>
+        placeholder="Enter your password"
+        minlength="6"
+        required>
     </div>
 
-    @if (errorMessage) {
-      <div class="error-message">{{ errorMessage }}</div>
+    @if (successMessage()) {
+      <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
     }
 
-    <button kendoButton themeColor="primary" [disabled]="!registerForm.valid || loading">
-      {{ loading ? 'Registering...' : 'Register' }}
+    <button cButton color="primary" type="submit" [disabled]="!registerForm.valid || loading()">
+      {{ loading() ? 'Registering...' : 'Register' }}
     </button>
   </form>
 
-  <p>Already have an account? <a routerLink="/login">Login here</a></p>
+  <p class="mt-3">Already have an account? <a routerLink="/login">Login here</a></p>
 </div>

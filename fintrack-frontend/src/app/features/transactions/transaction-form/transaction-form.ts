@@ -1,11 +1,11 @@
-import { Component, OnInit, signal, output } from '@angular/core';
+import { Component, OnInit, signal, output, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule, FormModule } from '@coreui/angular';
 import { CategoryService } from '../../../core/services/category.service';
 import { TransactionService } from '../../../core/services/transaction.service';
 import { CategoryResponse, TransactionType } from '../../../models/category.model';
-import { TransactionRequest } from '../../../models/transaction.model';
+import { TransactionRequest, TransactionResponse } from '../../../models/transaction.model';
 
 @Component({
   selector: 'app-transaction-form',
@@ -15,7 +15,9 @@ import { TransactionRequest } from '../../../models/transaction.model';
   styleUrl: './transaction-form.css'
 })
 export class TransactionForm implements OnInit {
+  editingTransaction = input<TransactionResponse | null>(null);
   transactionCreated = output<void>();
+  cancelEdit = output<void>();
 
   categories = signal<CategoryResponse[]>([]);
   loading = signal(false);
@@ -30,7 +32,22 @@ export class TransactionForm implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private transactionService: TransactionService
-  ) {}
+  ) {
+    effect(() => {
+      const txn = this.editingTransaction();
+      const cats = this.categories();
+      if (txn) {
+        const match = cats.find(c => c.name === txn.categoryName);
+        this.selectedCategoryId = match ? match.id : null;
+        this.amount = txn.amount;
+        this.description = txn.description;
+        this.transactionDate = txn.transactionDate;
+        this.type = txn.type;
+      } else {
+        this.resetForm();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -60,7 +77,12 @@ export class TransactionForm implements OnInit {
       type: this.type
     };
 
-    this.transactionService.create(request).subscribe({
+    const editing = this.editingTransaction();
+    const request$ = editing
+      ? this.transactionService.update(editing.id, request)
+      : this.transactionService.create(request);
+
+    request$.subscribe({
       next: () => {
         this.loading.set(false);
         this.resetForm();
@@ -68,9 +90,13 @@ export class TransactionForm implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set(err.error?.error || 'Failed to create transaction');
+        this.errorMessage.set(err.error?.error || 'Failed to save transaction');
       }
     });
+  }
+
+  onCancel(): void {
+    this.cancelEdit.emit();
   }
 
   private formatDate(date: Date): string {

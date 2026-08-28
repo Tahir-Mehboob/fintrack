@@ -1,18 +1,30 @@
 <div class="dashboard-container">
-  
-  <app-transaction-form (transactionCreated)="onTransactionCreated()"></app-transaction-form>
+  <div class="content-card mb-4">
+    <app-transaction-form
+      [editingTransaction]="editingTransaction()"
+      (transactionCreated)="onFormSuccess()"
+      (cancelEdit)="cancelEdit()">
+    </app-transaction-form>
+  </div>
 
-  <h2>Your Transactions</h2>
-
-  @if (loading()) {
-    <p>Loading...</p>
-  } @else {
-    <kendo-grid [data]="transactions()" [pageable]="true" [sortable]="true" [pageSize]="10">
-      <kendo-grid-column field="transactionDate" title="Date" [width]="120"></kendo-grid-column>
-      <kendo-grid-column field="categoryName" title="Category" [width]="150"></kendo-grid-column>
-      <kendo-grid-column field="description" title="Description"></kendo-grid-column>
-      <kendo-grid-column field="type" title="Type" [width]="100"></kendo-grid-column>
-      <kendo-grid-column field="amount" title="Amount" [width]="120" format="{0:c}"></kendo-grid-column>
-    </kendo-grid>
-  }
+  <div class="content-card">
+    <h5 class="mb-3">Your Transactions</h5>
+    @if (loading()) {
+      <p>Loading...</p>
+    } @else {
+      <kendo-grid [data]="transactions()" [pageable]="true" [sortable]="true" [pageSize]="10">
+        <kendo-grid-column field="transactionDate" title="Date" [width]="120"></kendo-grid-column>
+        <kendo-grid-column field="categoryName" title="Category" [width]="150"></kendo-grid-column>
+        <kendo-grid-column field="description" title="Description"></kendo-grid-column>
+        <kendo-grid-column field="type" title="Type" [width]="100"></kendo-grid-column>
+        <kendo-grid-column field="amount" title="Amount" [width]="120" format="{0:c}"></kendo-grid-column>
+        <kendo-grid-column title="Actions" [width]="180">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button cButton color="primary" variant="outline" size="sm" (click)="editTransaction(dataItem)" style="margin-right: 8px;">Edit</button>
+            <button cButton color="danger" variant="outline" size="sm" (click)="deleteTransaction(dataItem.id)">Delete</button>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
+    }
+  </div>
 </div>

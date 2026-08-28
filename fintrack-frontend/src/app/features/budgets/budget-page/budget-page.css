@@ -37,3 +37,8 @@
   color: #F44336;
   font-weight: 500;
 }
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}

@@ -1,26 +1,30 @@
 <div class="budget-page-container">
   <h1>Budget Overview</h1>
 
-  <app-budget-form (budgetCreated)="loadBudgets()"></app-budget-form>
+  <app-budget-form
+    [editingBudget]="editingBudget()"
+    (budgetCreated)="onFormSuccess()"
+    (cancelEdit)="cancelEdit()">
+  </app-budget-form>
 
   <div class="filter-row">
-    <div class="form-field">
-      <label>Month</label>
-      <kendo-dropdownlist
-        [data]="months"
-        textField="text"
-        valueField="value"
-        [(ngModel)]="selectedMonth"
-        (valueChange)="onFilterChange()">
-      </kendo-dropdownlist>
+    <div class="mb-3">
+      <label cLabel for="filterMonth">Month</label>
+      <select cSelect id="filterMonth" name="filterMonth" [(ngModel)]="selectedMonth" (ngModelChange)="onFilterChange()">
+        @for (m of months; track m.value) {
+          <option [ngValue]="m.value">{{ m.text }}</option>
+        }
+      </select>
     </div>
-    <div class="form-field">
-      <label>Year</label>
-      <kendo-numerictextbox
+    <div class="mb-3">
+      <label cLabel for="filterYear">Year</label>
+      <input
+        cFormControl
+        type="number"
+        id="filterYear"
+        name="filterYear"
         [(ngModel)]="selectedYear"
-        [format]="'#'"
-        (valueChange)="onFilterChange()">
-      </kendo-numerictextbox>
+        (ngModelChange)="onFilterChange()">
     </div>
   </div>
 
@@ -50,6 +54,10 @@
           @if (isOverBudget(budget)) {
             <p class="warning">⚠️ Over budget!</p>
           }
+          <div class="card-actions">
+            <button cButton color="primary" variant="outline" size="sm" (click)="editBudget(budget)">Edit</button>
+            <button cButton color="danger" variant="outline" size="sm" (click)="deleteBudget(budget.id)">Delete</button>
+          </div>
         </div>
       }
     </div>

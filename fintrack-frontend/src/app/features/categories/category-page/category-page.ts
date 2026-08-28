@@ -1,27 +1,24 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { ButtonModule } from '@progress/kendo-angular-buttons';
+import { CommonModule } from '@angular/common';
 import { GridModule } from '@progress/kendo-angular-grid';
-import { CategoryForm } from '../category-form/category-form';
-import { NotificationService } from '@progress/kendo-angular-notification';
+import { ButtonModule } from '@coreui/angular';
 import { CategoryService } from '../../../core/services/category.service';
 import { CategoryResponse } from '../../../models/category.model';
+import { CategoryForm } from '../category-form/category-form';
 
 @Component({
   selector: 'app-category-page',
+  standalone: true,
   imports: [CommonModule, GridModule, ButtonModule, CategoryForm],
   templateUrl: './category-page.html',
-  styleUrl: './category-page.css',
+  styleUrl: './category-page.css'
 })
-
 export class CategoryPage implements OnInit {
   categories = signal<CategoryResponse[]>([]);
   loading = signal(true);
+  editingCategory = signal<CategoryResponse | null>(null);
 
-  constructor(
-    private categoryService: CategoryService,
-    private notificationService: NotificationService
-  ) {}
+  constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -41,26 +38,29 @@ export class CategoryPage implements OnInit {
     });
   }
 
+  onFormSuccess(): void {
+    this.editingCategory.set(null);
+    this.loadCategories();
+  }
+
+  editCategory(category: CategoryResponse): void {
+    this.editingCategory.set(category);
+  }
+
+  cancelEdit(): void {
+    this.editingCategory.set(null);
+  }
+
   deleteCategory(id: number): void {
     if (!confirm('Delete this category? This may affect existing transactions.')) {
       return;
     }
 
     this.categoryService.delete(id).subscribe({
-      next: () => {
-        this.notificationService.show({
-          content: 'Category deleted',
-          type: { style: 'success', icon: true },
-          position: { horizontal: 'center', vertical: 'top' }
-        });
-        this.loadCategories();
-      },
+      next: () => this.loadCategories(),
       error: (err) => {
-        this.notificationService.show({
-          content: err.error?.error || 'Failed to delete category',
-          type: { style: 'error', icon: true },
-          position: { horizontal: 'center', vertical: 'top' }
-        });
+        console.error('Failed to delete category', err);
+        alert(err.error?.error || 'Failed to delete category');
       }
     });
   }
